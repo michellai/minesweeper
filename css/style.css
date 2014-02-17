@@ -1,3 +1,9 @@
+body {
+	position: relative;
+	top: 0px;
+	left: 40%;
+	width: 250px;
+}
 #gameboard td {
 	background-color:#ff5bb0;
 	border:1px solid #ee1eb5;
@@ -6,14 +12,33 @@
 	color:#ffffff;
 	font-family:arial;
 	font-size:15px;
-	padding:16px 16px;
+	padding:2px;
+	text-align:center;
 	text-decoration:none;
 	margin: -1px;
+	width:20px;
+	height:20px;
 }
-.myButton:hover {
-	background-color:#ef027d;
+.btn {
+	width:40px;
+	height:40px;
+	-moz-border-radius: 10px;
+	-webkit-border-radius: 10px;
+	vertical-align: top;
 }
-.myButton:active {
-	position:relative;
-	top:1px;
+#reset {
+	background-color: red;
+	border: 2px solid pink;
+}
+
+#numMines {
+
+	margin-left: 116px;
+	font-color: white;
+	background-color: gray;
+	border: 2px solid pink;
+}
+
+.fa-dot-circle-o {
+	font-color:red;
 }
