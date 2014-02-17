@@ -1,0 +1,19 @@
+#gameboard td {
+	background-color:#ff5bb0;
+	border:1px solid #ee1eb5;
+	display:inline-block;
+	cursor:pointer;
+	color:#ffffff;
+	font-family:arial;
+	font-size:15px;
+	padding:16px 16px;
+	text-decoration:none;
+	margin: -1px;
+}
+.myButton:hover {
+	background-color:#ef027d;
+}
+.myButton:active {
+	position:relative;
+	top:1px;
+}
