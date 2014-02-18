@@ -45,8 +45,8 @@ $(function() {
 	        	window.mines--;
 	        	updateMines();
 	        	if (window.clearedSquares == (window.boardX*window.boardY) ) {
-					alert('you win!');
-				}
+				showWin();
+			}
 	        }
 		}
     });
@@ -117,6 +117,10 @@ function clickSquare(row, col) {
 		reveal();
 		window.gameInPlay = false;
 		$('#reset').html('<i class="fa fa-frown-o fa-2x"></i>');
+		$('body').css('background-image', 'url("http://games.michell.ai/minesweeper/img/grumpy.gif")');
+		$('body').css('background-size', '60%');
+		$('body').css('background-repeat', 'no-repeat');
+		$('body').css('background-position', 'center top');
 		return;
 	} 
 	window.clearedSquares++;
@@ -170,8 +174,10 @@ function updateMines() {
 	$($('#numMines')).html(window.mines.toString());
 }
 function showWin() {
-	alert('you win!');
-	$('body').css('background-image', 'url("http://games.michell.ai/minesweeper/img/heart.gif")');
+	reveal();
+	$('body').css('background-image', 'url("http://games.michell.ai/minesweeper/img/heartfall.gif")');
+	$('body').css('background-repeat','repeat');
+	$('body').css('background-position', 'center top'); 
 }
 function resetBoard() {
 	window.mines = 10;
@@ -237,6 +243,8 @@ function reveal() {
 
 		}
 	}
+	window.mines = 0;
+	updateMines();
 }
 
 jQuery.fn.disableTextSelect = function() {
