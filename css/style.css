@@ -1,8 +1,10 @@
 body {
-	position: relative;
-	top: 0px;
-	left: 40%;
-	width: 250px;
+	margin-left: auto;
+	margin-right: auto;
+	width: 20%;
+	background-repeat:repeat-x;
+	background-attachment:fixed;
+	background-position:center top; 
 }
 #gameboard td {
 	background-color:#ff5bb0;

@@ -1,16 +1,5 @@
 $(function() {
-	window.mines = 10;
-	window.clearedSquares = 0;
-	window.gameInPlay = true;
-	window.flags = new Array();
-	window.bombHtml = '<i class="fa fa-dot-circle-o"></i>';
-	
-	$('body').disableTextSelect();
-	createGameboard();
-	placeBombs();
-	for(var cnt=0; cnt < window.locations.length; cnt++) {
-		countNeighborMines(window.locations[cnt][0], window.locations[cnt][1]);
-	}
+	resetBoard();
 
 	$('.square').dblclick( function (event) {
 		row = $(this).parent().index();
@@ -132,8 +121,8 @@ function clickSquare(row, col) {
 	} 
 	window.clearedSquares++;
 	console.log('clearedSquares: '+window.clearedSquares+'minesMarked: ');
-	if (window.clearedSquares == (window.boardX*window.boardY) ) {
-		alert('you win!');
+	if (window.clearedSquares == (window.boardX*window.boardY)) {
+		showWin();
 	} else {
 		$('#gameboard tr:nth-child('+(row+1)+') td:nth-child('+(col+1)+')').css('background-color', 'red')
 		
@@ -164,6 +153,9 @@ function clickSquare(row, col) {
 			$('#gameboard tr:nth-child('+(row+1)+') td:nth-child('+(col+1)+')').html(bombsNear);
 			window.minefield[row][col].neighborMines = bombsNear;
 		}
+	    	if ((window.mines+window.clearedSquares) == (window.boardX*window.boardY)) {
+			showWin();
+		}
     }
 }
 function inBounds(row, offsetRow, col, offsetCol) {
@@ -177,7 +169,28 @@ function inBounds(row, offsetRow, col, offsetCol) {
 function updateMines() {
 	$($('#numMines')).html(window.mines.toString());
 }
-
+function showWin() {
+	alert('you win!');
+	$('body').css('background-image', 'url("http://games.michell.ai/minesweeper/img/heart.gif")');
+}
+function resetBoard() {
+	window.mines = 10;
+	window.clearedSquares = 0;
+	window.gameInPlay = true;
+	window.flags = new Array();
+	window.bombHtml = '<i class="fa fa-dot-circle-o"></i>';
+	
+	$('body').disableTextSelect();
+	/*
+	for (var row=1; row <= window.boardX; row++) {
+		$('#gameboard tr:nth-child('+row+')').remove();
+	}*/
+	createGameboard();
+	placeBombs();
+	for(var cnt=0; cnt < window.locations.length; cnt++) {
+		countNeighborMines(window.locations[cnt][0], window.locations[cnt][1]);
+	}
+}
 function placeBombs(minefield) {
 	bombsLeft = window.mines;
 	window.locations = new Array(bombsLeft);
