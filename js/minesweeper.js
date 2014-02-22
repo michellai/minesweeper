@@ -12,7 +12,6 @@ $(function() {
 					if (inBounds(row, offsetRow, col, offsetCol) &&
 						!window.minefield[row+offsetRow][col+offsetCol].isClicked &&
 						!window.minefield[row+offsetRow][col+offsetCol].isFlag) {
-							console.log('row: '+(row+offsetRow)+' col: '+(col+offsetRow));
 							clickSquare(row+offsetRow, col+offsetCol);
 					}
 				}
@@ -24,7 +23,6 @@ $(function() {
 	        e.preventDefault();
 	        
 	    	if (window.minefield[row][col].isFlag) {
-	    		alert('unmarking flag');
 	    		$(e.target).html('');
 	    		window.minefield[row][col].isFlag = false;
     			window.clearedSquares--;
@@ -155,18 +153,14 @@ function clickSquare(row, col) {
 		return;
 	} else {
 		
-		console.log('clearedSquares: '+window.clearedSquares+'minesMarked: ');
-		
 		$('#gameboard tr:nth-child('+(row+1)+') td:nth-child('+(col+1)+')').css('background-color', 'red')
 		window.clearedSquares++;
 		window.minefield[row][col].isClicked = true;
 		bombsNear = 0;
-		console.log("row: "+row+", col: "+col)
 		//count bombs in row above
 		for (var offsetRow = -1; offsetRow < 2; offsetRow++) {
 			for (var offsetCol = -1; offsetCol < 2; offsetCol++) {
 				if (inBounds(row, offsetRow, col, offsetCol)) {
-					console.log('row: '+(row+offsetRow)+' col: '+ (col+offsetCol));
 					if (window.minefield[row+offsetRow][col+offsetCol].hasMine) {
 						bombsNear++;
 					}
@@ -239,7 +233,6 @@ function resetBoard() {
 function placeBombs(minefield) {
 	bombsLeft = window.mines;
 	window.locations = new Array(bombsLeft);
-	console.log('placing '+bombsLeft+' Bombs');
 	while ( bombsLeft ) {
 		x = Math.floor((Math.random()*window.boardX));
 		y = Math.floor((Math.random()*window.boardY));
@@ -249,9 +242,6 @@ function placeBombs(minefield) {
 			window.minefield[x][y].hasMine = true;
 			bombsLeft--;
 		}
-	}
-	for (var l=0; l <locations.length; l++) {	
-		console.log('placed bombs here: '+window.locations[l]);
 	}
 }
 
@@ -275,7 +265,6 @@ function reveal() {
 
 	for (var cnt=0; cnt < window.locations.length; cnt++) {
 		window.minefield[window.locations[cnt][0]].isFlag = true;
-		console.log("revealing: ", window.locations[cnt]);
 		updateNeighborFlags(window.locations[cnt][0], window.locations[cnt][1], 1);
 		$('tr:nth-child('+(window.locations[cnt][0]+1)+') td:nth-child('+(window.locations[cnt][1]+1)+')').html(window.bombHtml);
 	}
