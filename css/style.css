@@ -10,6 +10,12 @@ body {
 	margin-top:30px;
 	font-size: 10px;
 }
+#timer {
+	font-color: black;
+	background-color: white;
+	border: 2px solid pink;
+	font-size: 18px;
+}
 #grumpy {
 	position: fixed;
 	margin-left: auto;
@@ -45,14 +51,23 @@ table {
 	-webkit-border-radius: 10px;
 	vertical-align: top;
 }
+#god {
+	font-color:blue;
+	background-color: white;
+	-moz-border-radius: 10px;
+	-webkit-border-radius: 10px;
+	vertical-align: top;
+}
 #reset {
+	margin-right:40px;
 	background-color: red;
 	border: 2px solid pink;
 }
 
 #numMines {
 
-	margin-left: 116px;
+	margin-left: 0px;
+	margin-right: 40px;
 	font-color: white;
 	background-color: white;
 	border: 2px solid pink;

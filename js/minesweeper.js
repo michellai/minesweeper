@@ -19,34 +19,50 @@ $(function() {
 			}
 		}
 	});
+	$('.fa .fa-dot-circle-o').bind("contextmenu",function(e){
+		if (window.gameInPlay) {
+	        e.preventDefault();
+	        
+	    	if (window.minefield[row][col].isFlag) {
+	    		alert('unmarking flag');
+	    		$(e.target).html('');
+	    		window.minefield[row][col].isFlag = false;
+    			window.clearedSquares--;
+    			updateNeighborFlags(row, col, -1);
+	    		window.mines++;
+	        	updateMines();
+	        }
+	    }
+	});
+
 	$(document).bind("contextmenu",function(e){
 		if (window.gameInPlay) {
 	        e.preventDefault();
 	        
-	        //check stuff
-	        row = $(e.target).parent().index();
-	    	col = $(e.target).index();
-	    	if ($(e.target).html() == window.bombHtml) {
-	    		$(e.target).html('');
-	    		window.minefield[row][col].isFlag = false;
-	    		window.clearedSquares--;
-    			console.log('clearedSquares: '+window.clearedSquares+'minesMarked: ');
-    			updateNeighborFlags(row, col, -1);
-	    		window.mines++;
-	        	updateMines();
+	        if (e.target.className == "fa fa-dot-circle-o") {
+	        	//encounter Flagged icon
+	        	row = $(e.target).parent().parent().index();
+	    		col = $(e.target).parent().index();
+    			$(e.target).parent().html('');
+	    		setFlag(row, col, false);
+	        } else if (e.target.className == "square") {
+	        	//clicked on square
+		        row = $(e.target).parent().index();
+		    	col = $(e.target).index();
 
-	    	} else if (!window.minefield[row][col].isClicked) {
-	        	$(e.target).html(window.bombHtml);
-	        	window.minefield[row][col].isFlag = true;
-	        	window.flags.push([row, col]);
-	        	window.clearedSquares++;
-        		console.log('clearedSquares: '+window.clearedSquares+'minesMarked: ');
-        		updateNeighborFlags(row, col, 1);
-	        	window.mines--;
-	        	updateMines();
-	        	if (window.clearedSquares == (window.boardX*window.boardY) ) {
-				showWin();
-			}
+		    	if (!window.minefield[row][col].isFlag &&
+		    		!window.minefield[row][col].isClicked &&
+		    		window.mines > 1) {
+		        	$(e.target).html(window.bombHtml);
+		        	setFlag(row, col, true);
+		        	if (window.clearedSquares+window.mines == (window.boardX*window.boardY) ) {
+						showWin();
+					}
+
+				} else if (window.minefield[row][col].isFlag) { 
+		    		$(e.target).html('');
+		    		setFlag(row, col, false);
+		    	} 
 	        }
 		}
     });
@@ -57,7 +73,19 @@ $(function() {
 	});
 	
 });
-
+function setFlag(row, col, boolVal) {
+	window.minefield[row][col].isFlag = boolVal;
+	if (!boolVal) {
+		window.clearedSquares--;
+		updateNeighborFlags(row, col, -1);
+		window.mines++;		
+	} else {
+		window.clearedSquares++;
+		updateNeighborFlags(row, col, +1);
+		window.mines--;
+	}
+	updateMines();
+}
 function updateNeighborFlags(row, col, amount) {
 	for (var offsetRow = -1; offsetRow < 2; offsetRow++) {
 		for (var offsetCol = -1; offsetCol < 2; offsetCol++) {
@@ -106,30 +134,31 @@ function clickSquare(row, col) {
 	if (window.minefield[row][col].isClicked) { return; } 
 
 	//if space is marked as flag, unmark as flag
-	if (window.minefield[row][col].isFlag) {
-			window.minefield[row][col].isFlag = false;
-    		window.mines++;
-        	updateMines();
+	if (window.minefield[row][col].isFlag &&
+		!window.minefield[row][col].hasMine) {
+		setFlag(row, col, false);
+		$('#gameboard tr:nth-child('+(row+1)+') td:nth-child('+(col+1)+')').css('color', 'black');
 	}
 
-	//hit a bomb
-	if (window.minefield[row][col].hasMine) {
+	//cleared incorrectly flagged square
+	if (window.minefield[row][col].isFlag &&
+		window.minefield[row][col].hasMine) {
+		$('#gameboard tr:nth-child('+(row+1)+') td:nth-child('+(col+1)+')').css('color', 'black');
 		reveal();
-		window.gameInPlay = false;
-		$('#reset').html('<i class="fa fa-frown-o fa-2x"></i>');
-		$('body').css('background-image', 'url("http://games.michell.ai/minesweeper/img/grumpy.gif")');
-		$('body').css('background-size', '60%');
-		$('body').css('background-repeat', 'no-repeat');
-		$('body').css('background-position', 'center top');
+		showLose();
 		return;
-	} 
-	window.clearedSquares++;
-	console.log('clearedSquares: '+window.clearedSquares+'minesMarked: ');
-	if (window.clearedSquares == (window.boardX*window.boardY)) {
-		showWin();
+	} else if (window.minefield[row][col].hasMine ) {
+		//hit a bomb
+		$('#gameboard tr:nth-child('+(row+1)+') td:nth-child('+(col+1)+')').css('color', 'red');
+		reveal();
+		showLose();
+		return;
 	} else {
-		$('#gameboard tr:nth-child('+(row+1)+') td:nth-child('+(col+1)+')').css('background-color', 'red')
 		
+		console.log('clearedSquares: '+window.clearedSquares+'minesMarked: ');
+		
+		$('#gameboard tr:nth-child('+(row+1)+') td:nth-child('+(col+1)+')').css('background-color', 'red')
+		window.clearedSquares++;
 		window.minefield[row][col].isClicked = true;
 		bombsNear = 0;
 		console.log("row: "+row+", col: "+col)
@@ -157,10 +186,11 @@ function clickSquare(row, col) {
 			$('#gameboard tr:nth-child('+(row+1)+') td:nth-child('+(col+1)+')').html(bombsNear);
 			window.minefield[row][col].neighborMines = bombsNear;
 		}
-	    	if ((window.mines+window.clearedSquares) == (window.boardX*window.boardY)) {
+	   	if ((window.flags.length+window.clearedSquares+window.mines) == (window.boardX*window.boardY)) {
 			showWin();
 		}
-    }
+	}
+    
 }
 function inBounds(row, offsetRow, col, offsetCol) {
 	if (row+offsetRow >= 0 && row+offsetRow < window.boardY &&
@@ -172,6 +202,15 @@ function inBounds(row, offsetRow, col, offsetCol) {
 
 function updateMines() {
 	$($('#numMines')).html(window.mines.toString());
+}
+function showLose() {
+	window.gameInPlay = false;
+
+	$('#reset').html('<i class="fa fa-frown-o fa-2x"></i>');
+	$('body').css('background-image', 'url("http://games.michell.ai/minesweeper/img/grumpy.gif")');
+	$('body').css('background-size', '60%');
+	$('body').css('background-repeat', 'no-repeat');
+	$('body').css('background-position', 'center top');
 }
 function showWin() {
 	reveal();
@@ -233,17 +272,25 @@ function createGameboard() {
 }
 
 function reveal() {
+
 	for (var cnt=0; cnt < window.locations.length; cnt++) {
+		window.minefield[window.locations[cnt][0]].isFlag = true;
 		console.log("revealing: ", window.locations[cnt]);
+		updateNeighborFlags(window.locations[cnt][0], window.locations[cnt][1], 1);
 		$('tr:nth-child('+(window.locations[cnt][0]+1)+') td:nth-child('+(window.locations[cnt][1]+1)+')').html(window.bombHtml);
 	}
 	for (var cnt=0; cnt < window.flags.length; cnt++) {
-		if (window.locations.indexOf(window.flags[cnt]) == -1) {
-			$('#gameboard tr:nth-child('+(window.flags[cnt][0]+1)+') td:nth-child('+(window.flags[cnt][1]+1)+')').css('font-color', 'red');
+		debugger
+		if (!window.minefield[window.flags[cnt][0]+1][window.flags[cnt][1]+1].hasMine) {
+			updateNeighborFlags(window.locations[cnt][0], window.locations[cnt][1], -1);
+
+			$('#gameboard tr:nth-child('+(window.flags[cnt][0]+1)+') td:nth-child('+(window.flags[cnt][1]+1)+')').css('color', 'black');
 
 		}
 	}
 	window.mines = 0;
+	window.flags = window.locations;
+
 	updateMines();
 }
 

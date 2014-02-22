@@ -12,17 +12,18 @@
 
 
 <table id="gameboard">
+<button id="numMines" type="button" class=" btn btn-default btn-lg btn-love" onclick="location.reload()">10
+</button>
 <button id="reset" type="button" class="btn btn-default btn-lg btn-love" onclick="location.reload()">
   	<i class="fa fa-heart-o fa-2x"></i>
 </button>
-<button id="numMines" type="button" class=" btn btn-default btn-lg btn-love" onclick="location.reload()">10
-</button>
+<button id="timer" type="button" class=" btn btn-default btn-lg">0</button>
 </table>
 <div id='instructions'>
 <b>Click</b>: clear space.<br/>
 <b>Right-Click</b>: mark mine.<br/>
 <b>Double-Click</b>: clear around marked mines<br/>
-<button id='cheat' onclick="showWin()">.</button>
+<button id='god' onclick="reveal()"><i class="btn-xs btn-info fa fa-eye"></i></button>
 </div>
 </body>
 </html>
