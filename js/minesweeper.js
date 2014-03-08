@@ -4,18 +4,26 @@ $(function() {
 	$('.square').dblclick( function (event) {
 		row = $(this).parent().index();
 	    col = $(this).index();
-	    if (window.minefield[row][col].isClicked &&
-	    	window.minefield[row][col].neighborMines == window.minefield[row][col].neighborFlags) {
-	    	
-			for (var offsetRow = -1; offsetRow < 2; offsetRow++) {
-				for (var offsetCol = -1; offsetCol < 2; offsetCol++) {
-					if (inBounds(row, offsetRow, col, offsetCol) &&
-						!window.minefield[row+offsetRow][col+offsetCol].isClicked &&
-						!window.minefield[row+offsetRow][col+offsetCol].isFlag) {
-							clickSquare(row+offsetRow, col+offsetCol);
+	    if (window.minefield[row][col].isClicked) {
+	    	if (window.minefield[row][col].neighborMines == window.minefield[row][col].neighborFlags) {
+	    		//handle case where it's the wrong mine marked
+
+				for (var offsetRow = -1; offsetRow < 2; offsetRow++) {
+					for (var offsetCol = -1; offsetCol < 2; offsetCol++) {
+						if (inBounds(row, offsetRow, col, offsetCol) &&
+							!window.minefield[row+offsetRow][col+offsetCol].isClicked &&
+							!window.minefield[row+offsetRow][col+offsetCol].isFlag) {
+								clickSquare(row+offsetRow, col+offsetCol);
+						}
 					}
 				}
+			} else if (window.minefield[row][col].neighborMines < window.minefield[row][col].neighborFlags) {
+				//if flagged mines > number of neighbors, then lose
+				$(this).append(window.timesHtml);
+				reveal();
+				showLose();
 			}
+			//if #marked mines is lesser than number of mines, then don't do anything
 		}
 	});
 	$('.fa .fa-dot-circle-o').bind("contextmenu",function(e){
@@ -66,6 +74,12 @@ $(function() {
     });
 	$('.square').click( function (event) {
 		if (window.gameInPlay) {
+			if (!window.startedGame) {
+				window.timer  = window.setTimeout( function(){ 
+			          updateTime(); 
+				}, 1000 );
+				window.startedGame = true;
+			}
 	    	clickSquare($(this).parent().index(), $(this).index());
 	    }
 	});
@@ -85,6 +99,7 @@ function setFlag(row, col, boolVal) {
 	updateMines();
 }
 function updateNeighborFlags(row, col, amount) {
+	/* Update the number of neighboring mines for a particular cell */
 	for (var offsetRow = -1; offsetRow < 2; offsetRow++) {
 		for (var offsetCol = -1; offsetCol < 2; offsetCol++) {
 			if (inBounds(row, offsetRow, col, offsetCol)) {
@@ -131,23 +146,25 @@ function clickSquare(row, col) {
 	//nothing to do for square already clicked
 	if (window.minefield[row][col].isClicked) { return; } 
 
-	//if space is marked as flag, unmark as flag
+	//if space is marked as flag, and not a mine, unmark as flag
 	if (window.minefield[row][col].isFlag &&
 		!window.minefield[row][col].hasMine) {
 		setFlag(row, col, false);
-		$('#gameboard tr:nth-child('+(row+1)+') td:nth-child('+(col+1)+')').css('color', 'black');
 	}
-
-	//cleared incorrectly flagged square
+	/*
 	if (window.minefield[row][col].isFlag &&
 		window.minefield[row][col].hasMine) {
-		$('#gameboard tr:nth-child('+(row+1)+') td:nth-child('+(col+1)+')').css('color', 'black');
+		$(this).append(window.timesHtml);
 		reveal();
 		showLose();
-		return;
-	} else if (window.minefield[row][col].hasMine ) {
-		//hit a bomb
+	}*/
+
+	//hit a bomb
+	if (window.minefield[row][col].hasMine ) {
 		$('#gameboard tr:nth-child('+(row+1)+') td:nth-child('+(col+1)+')').css('color', 'red');
+		if (window.minefield[row][col].isFlag ) {
+			$(this).append(window.timesHtml);
+		}
 		reveal();
 		showLose();
 		return;
@@ -157,28 +174,39 @@ function clickSquare(row, col) {
 		window.clearedSquares++;
 		window.minefield[row][col].isClicked = true;
 		bombsNear = 0;
-		//count bombs in row above
+		flagsNear = 0;
+		//count bombs in rows & cols around
 		for (var offsetRow = -1; offsetRow < 2; offsetRow++) {
 			for (var offsetCol = -1; offsetCol < 2; offsetCol++) {
 				if (inBounds(row, offsetRow, col, offsetCol)) {
 					if (window.minefield[row+offsetRow][col+offsetCol].hasMine) {
 						bombsNear++;
 					}
+					if (window.minefield[row+offsetRow][col+offsetCol].isFlag) {
+						flagsNear++;
+					}
 				}
 
 			}
 		}
-				
+		
 		if (bombsNear == 0) {
 			$('#gameboard tr:nth-child('+(row+1)+') td:nth-child('+(col+1)+')').css('background-color', 'black');
 			for (var offsetRow = -1; offsetRow < 2; offsetRow++) {
 				for (var offsetCol = -1; offsetCol < 2; offsetCol++) {
 					clickSquare(row+offsetRow, col+offsetCol);
+					if (!window.gameInPlay) {
+									
+					}
 				}
 			}
-		} else {
-			$('#gameboard tr:nth-child('+(row+1)+') td:nth-child('+(col+1)+')').html(bombsNear);
-			window.minefield[row][col].neighborMines = bombsNear;
+		} else { //show number of mines neighboring
+			if (window.minefield[row][col].isFlag) {
+				$('#gameboard tr:nth-child('+(row+1)+') td:nth-child('+(col+1)+')').css('color', 'black');
+			} else {
+				$('#gameboard tr:nth-child('+(row+1)+') td:nth-child('+(col+1)+')').html(bombsNear);
+				window.minefield[row][col].neighborMines = bombsNear;
+			}
 		}
 	   	if ((window.flags.length+window.clearedSquares+window.mines) == (window.boardX*window.boardY)) {
 			showWin();
@@ -196,6 +224,9 @@ function inBounds(row, offsetRow, col, offsetCol) {
 
 function updateMines() {
 	$($('#numMines')).html(window.mines.toString());
+}
+function updateTime() {
+	$($('#timer')).html(window.mines.toString());
 }
 function showLose() {
 	window.gameInPlay = false;
@@ -218,7 +249,9 @@ function resetBoard() {
 	window.gameInPlay = true;
 	window.flags = new Array();
 	window.bombHtml = '<i class="fa fa-dot-circle-o"></i>';
-	
+	window.timesHtml = '<i class="fa fa-times fa-2x"></i>';
+	window.startedGame = false;
+	window.clearInterval(window.timer);	
 	$('body').disableTextSelect();
 	/*
 	for (var row=1; row <= window.boardX; row++) {
@@ -263,19 +296,18 @@ function createGameboard() {
 
 function reveal() {
 
+	for (var cnt=0; cnt < window.boardY; cnt++) {
+		for (var hcnt=0;hcnt < window.boardX; hcnt++) {
+			if (window.minefield[cnt][hcnt].isFlag &&
+				!window.minefield[cnt][hcnt].hasMine) {
+				$('tr:nth-child('+(cnt+1)+') td:nth-child('+(hcnt+1)+')').append(window.timesHtml);
+			}
+		}
+	}
 	for (var cnt=0; cnt < window.locations.length; cnt++) {
 		window.minefield[window.locations[cnt][0]].isFlag = true;
 		updateNeighborFlags(window.locations[cnt][0], window.locations[cnt][1], 1);
 		$('tr:nth-child('+(window.locations[cnt][0]+1)+') td:nth-child('+(window.locations[cnt][1]+1)+')').html(window.bombHtml);
-	}
-	for (var cnt=0; cnt < window.flags.length; cnt++) {
-		debugger
-		if (!window.minefield[window.flags[cnt][0]+1][window.flags[cnt][1]+1].hasMine) {
-			updateNeighborFlags(window.locations[cnt][0], window.locations[cnt][1], -1);
-
-			$('#gameboard tr:nth-child('+(window.flags[cnt][0]+1)+') td:nth-child('+(window.flags[cnt][1]+1)+')').css('color', 'black');
-
-		}
 	}
 	window.mines = 0;
 	window.flags = window.locations;

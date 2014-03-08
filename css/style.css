@@ -77,3 +77,11 @@ table {
 .fa-dot-circle-o {
 	font-color:red;
 }
+.fa-times {
+	position:relative;
+	top:-20px;
+	left:-2px;
+	opacity:.7;
+	color: black;
+
+}
