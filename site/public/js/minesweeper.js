@@ -29,7 +29,7 @@ $(function() {
 	$('.fa .fa-dot-circle-o').bind("contextmenu",function(e){
 		if (window.gameInPlay) {
 	        e.preventDefault();
-	        
+
 	    	if (window.minefield[row][col].isFlag) {
 	    		$(e.target).html('');
 	    		window.minefield[row][col].isFlag = false;
@@ -44,7 +44,7 @@ $(function() {
 	$(document).bind("contextmenu",function(e){
 		if (window.gameInPlay) {
 	        e.preventDefault();
-	        
+
 	        if (e.target.className == "fa fa-dot-circle-o") {
 	        	//encounter Flagged icon
 	        	row = $(e.target).parent().parent().index();
@@ -65,32 +65,32 @@ $(function() {
 						showWin();
 					}
 
-				} else if (window.minefield[row][col].isFlag) { 
+				} else if (window.minefield[row][col].isFlag) {
 		    		$(e.target).html('');
 		    		setFlag(row, col, false);
-		    	} 
+		    	}
 	        }
 		}
     });
 	$('.square').click( function (event) {
 		if (window.gameInPlay) {
 			if (!window.startedGame) {
-				window.timer  = window.setTimeout( function(){ 
-			          updateTime(); 
+				window.timer  = window.setTimeout( function(){
+			          updateTime();
 				}, 1000 );
 				window.startedGame = true;
 			}
 	    	clickSquare($(this).parent().index(), $(this).index());
 	    }
 	});
-	
+
 });
 function setFlag(row, col, boolVal) {
 	window.minefield[row][col].isFlag = boolVal;
 	if (!boolVal) {
 		window.clearedSquares--;
 		updateNeighborFlags(row, col, -1);
-		window.mines++;		
+		window.mines++;
 	} else {
 		window.clearedSquares++;
 		updateNeighborFlags(row, col, +1);
@@ -119,14 +119,14 @@ function updateNeighborFlags(row, col, amount) {
 }
 
 function countNeighborMines(row, col) {
-	
+
 	for (var offsetRow = -1; offsetRow < 2; offsetRow++) {
 		for (var offsetCol = -1; offsetCol < 2; offsetCol++) {
 			if (inBounds(row, offsetRow, col, offsetCol) &&
 				window.minefield[row+offsetRow][col+offsetCol].hasMine) {
 					window.minefield[row+offsetRow][col+offsetCol].neighborMines++;
 			}
-			
+
 		}
 	}
 }
@@ -139,12 +139,12 @@ function Square() {
 }
 
 function clickSquare(row, col) {
-	
+
 	//invalid row/col [0-7]
 	if (row < 0 || row > window.boardY-1 || col < 0 || col > window.boardX-1) { return; }
 
 	//nothing to do for square already clicked
-	if (window.minefield[row][col].isClicked) { return; } 
+	if (window.minefield[row][col].isClicked) { return; }
 
 	//if space is marked as flag, and not a mine, unmark as flag
 	if (window.minefield[row][col].isFlag &&
@@ -169,7 +169,7 @@ function clickSquare(row, col) {
 		showLose();
 		return;
 	} else {
-		
+
 		$('#gameboard tr:nth-child('+(row+1)+') td:nth-child('+(col+1)+')').css('background-color', 'red')
 		window.clearedSquares++;
 		window.minefield[row][col].isClicked = true;
@@ -189,14 +189,14 @@ function clickSquare(row, col) {
 
 			}
 		}
-		
+
 		if (bombsNear == 0) {
 			$('#gameboard tr:nth-child('+(row+1)+') td:nth-child('+(col+1)+')').css('background-color', 'black');
 			for (var offsetRow = -1; offsetRow < 2; offsetRow++) {
 				for (var offsetCol = -1; offsetCol < 2; offsetCol++) {
 					clickSquare(row+offsetRow, col+offsetCol);
 					if (!window.gameInPlay) {
-									
+
 					}
 				}
 			}
@@ -212,7 +212,7 @@ function clickSquare(row, col) {
 			showWin();
 		}
 	}
-    
+
 }
 function inBounds(row, offsetRow, col, offsetCol) {
 	if (row+offsetRow >= 0 && row+offsetRow < window.boardY &&
@@ -241,7 +241,7 @@ function showWin() {
 	reveal();
 	$('body').css('background-image', 'url("http://games.michell.ai/minesweeper/img/heartfall.gif")');
 	$('body').css('background-repeat','repeat');
-	$('body').css('background-position', 'center top'); 
+	$('body').css('background-position', 'center top');
 }
 function resetBoard() {
 	window.mines = 10;
@@ -251,7 +251,7 @@ function resetBoard() {
 	window.bombHtml = '<i class="fa fa-dot-circle-o"></i>';
 	window.timesHtml = '<i class="fa fa-times fa-2x"></i>';
 	window.startedGame = false;
-	window.clearInterval(window.timer);	
+	window.clearInterval(window.timer);
 	$('body').disableTextSelect();
 	/*
 	for (var row=1; row <= window.boardX; row++) {
