@@ -232,14 +232,14 @@ function showLose() {
 	window.gameInPlay = false;
 
 	$('#reset').html('<i class="fa fa-frown-o fa-2x"></i>');
-	$('body').css('background-image', 'url("http://games.michell.ai/minesweeper/img/grumpy.gif")');
+	$('body').css('background-image', 'url("img/grumpy.gif")');
 	$('body').css('background-size', '60%');
 	$('body').css('background-repeat', 'no-repeat');
 	$('body').css('background-position', 'center top');
 }
 function showWin() {
 	reveal();
-	$('body').css('background-image', 'url("http://games.michell.ai/minesweeper/img/heartfall.gif")');
+	$('body').css('background-image', 'url("img/heartfall.gif")');
 	$('body').css('background-repeat','repeat');
 	$('body').css('background-position', 'center top');
 }
