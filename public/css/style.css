@@ -37,7 +37,6 @@ table {
 	color:#ffffff;
 	font-family:arial;
 	font-size:15px;
-	padding:2px;
 	text-align:center;
 	text-decoration:none;
 	margin: -1px;
@@ -51,6 +50,10 @@ table {
 	-webkit-border-radius: 10px;
 	vertical-align: top;
 }
+.btn-lg {
+	padding:0px;
+	font-size: 12px;
+}
 #god {
 	font-color:blue;
 	background-color: white;
@@ -59,7 +62,7 @@ table {
 	vertical-align: top;
 }
 #reset {
-	margin-right:40px;
+	margin-right:20px;
 	background-color: red;
 	border: 2px solid pink;
 }
@@ -67,7 +70,7 @@ table {
 #numMines {
 
 	margin-left: 0px;
-	margin-right: 40px;
+	margin-right: 20px;
 	font-color: white;
 	background-color: white;
 	border: 2px solid pink;
